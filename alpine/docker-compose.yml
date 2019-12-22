@@ -15,8 +15,8 @@ services:
       '
     environment:
       - ENTRYPOINT_DEBUG=true
-      - DOCKER_USER=1000
-      - DOCKER_GROUP=2000
+      - RUN_AS_USER=1000
+      - RUN_AS_GROUP=2000
 
   test:
     image: ${TEST_IMAGE}
