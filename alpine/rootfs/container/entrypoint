@@ -1,0 +1,73 @@
+#!/bin/bash
+
+### MESSAGE ####################################################################
+
+# Format message
+msg() {
+  local LEVEL=$1; shift
+  local ENTRYPOINT=$1; shift
+  local TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  ENTRYPOINT=$(basename ${ENTRYPOINT})
+
+  echo "$(printf "[%-24s][%-5s][%-25s] $*" ${TIMESTAMP} ${LEVEL} ${ENTRYPOINT})"
+}
+
+# Messages with severity
+error() {
+  msg "ERROR" ${ENTRYPOINT:-$0} "$*"
+}
+
+warn() {
+  msg "WARN" ${ENTRYPOINT:-$0} "$*"
+}
+
+info() {
+  if [ -n "${ENTRYPOINT_INFO}" -o -n "${ENTRYPOINT_DEBUG}" ]; then
+    msg "INFO" ${ENTRYPOINT:-$0} "$*"
+  fi
+}
+
+debug() {
+  if [ -n "${ENTRYPOINT_DEBUG}" ]; then
+    msg "DEBUG" ${ENTRYPOINT:-$0} "$*"
+  fi
+}
+
+### ENTRYPOINT #################################################################
+
+# Stop on first error
+set -e
+
+# Lock against parallel execution
+exec 100</container/entrypoint
+flock -x 100
+
+# Run entrypoint scripts
+if [ -e /entrypoint ]; then
+  for ENTRYPOINT in /entrypoint/*.sh; do
+    . ${ENTRYPOINT}
+  done
+  unset ENTRYPOINT
+fi
+
+# If the process namespace in Kubernetes Pod is not shared,
+# we must use our own init process
+if [ "$$" == "1" ]; then
+  info "Using '$(which tini)' as an init process"
+  set -- $(which tini) -- "$@"
+fi
+
+# Execute with different privileges
+if [ -n "${RUN_AS_USER}" ]; then
+  info "Running as '${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}}'"
+  set -- $(which su-exec) ${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}} "$@"
+fi
+
+# Unlock
+flock -u 100
+
+# Execute command
+debug "Executing command: $(printf "[%s]", "$@")"
+exec "$@"
+
+################################################################################

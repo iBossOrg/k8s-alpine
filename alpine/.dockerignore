@@ -1,0 +1,10 @@
+# https://docs.docker.com/engine/reference/builder/#dockerignore-file
+
+# Git Repository
+.git
+
+# Info about running containers
+.docker-*
+
+# Tests
+spec

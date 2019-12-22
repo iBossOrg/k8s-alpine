@@ -1,0 +1,37 @@
+name: Build and Publish to Docker Hub
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-publish:
+    name: Build and Publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+
+      - name: Checkout Mk
+        run:  git clone https://github.com/iBossOrg/Mk ../Mk
+
+      - name: Login to registry
+        uses: azure/docker-login@v1
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Pull images
+        run: make docker-pull
+        working-directory: ./alpine
+        continue-on-error: true
+
+      - name: Build and test images
+        run:  make all
+        env: { RSPEC_FORMAT: doc }
+        working-directory: ./alpine
+
+      - name: Publish images
+        run:  make docker-push
+        working-directory: ./alpine

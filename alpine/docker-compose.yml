@@ -1,0 +1,44 @@
+version: "3"
+
+services:
+
+  container:
+    image: ${DOCKER_IMAGE}
+    command: >
+      nc -lk -p 8080 -v -e /bin/bash -c '
+        sleep 0.1;
+        echo "HTTP/1.1 200 OK";
+        echo "Content-Type: text/plain; charset=$${CHARSET}";
+        echo "Content-Length: $$(date | wc -m)";
+        echo;
+        date
+      '
+    environment:
+      - ENTRYPOINT_DEBUG=true
+      - DOCKER_USER=1000
+      - DOCKER_GROUP=2000
+
+  test:
+    image: ${TEST_IMAGE}
+    command: ${TEST_CMD}
+    depends_on:
+      - container
+    env_file:
+      - ${TEST_ENV_FILE}
+    environment:
+      - ENTRYPOINT_DEBUG=true
+      - WAIT_FOR_URL=http://container:8080
+      - WAIT_FOR_TIMEOUT=10
+    working_dir: ${TEST_DIR}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${TEST_DIR}:${TEST_DIR}
+
+  wait:
+    image: ${TEST_IMAGE}
+    depends_on:
+      - container
+    environment:
+      - ENTRYPOINT_DEBUG=true
+      - WAIT_FOR_URL=http://container:8080
+      - WAIT_FOR_TIMEOUT=10
