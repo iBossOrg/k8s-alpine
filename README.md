@@ -49,14 +49,15 @@ Use the command `make` in the project directory:
 
 ```bash
 make all                      # Build all images and run tests
-make images                   # Build all images and run tests
+make image                    # Build all images and run tests
 make clean                    # Delete all running containers and work files
 ```
 
-Use the command `make` in `alpine/latest` or `alpine/edge` directory:
+Use the command `make` in `alpine/latest` or `alpine/edge` directories:
 
 ```bash
 make all                      # Build an image and run tests
+make image                    # Build an image, run tests and delete all containers and work files
 make build                    # Build an image
 make rebuild                  # Build an image without using Docker layer caching
 make vars                     # Show the make variables

@@ -14,12 +14,12 @@ endef
 
 # Build all images
 .PHONY: all
-all: images
+all: image
 
 # Build all images
-.PHONY: images
-images:
-	@$(call IMAGES_RECIPE,$(IMAGES),all)
+.PHONY: image
+image:
+	@$(call IMAGES_RECIPE,$(IMAGES),$@)
 
 # Delete all running containers and work files
 .PHONY: clean

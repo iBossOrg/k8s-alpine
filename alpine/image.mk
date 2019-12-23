@@ -11,6 +11,10 @@ TEST_VARS		+= OS_RELEASE
 .PHONY: all
 all: _clean build start wait logs test
 
+# Build an image, run tests and delete all containers and work files
+.PHONY: image
+image: all clean
+
 ### BUILD_TARGETS ##############################################################
 
 # Build an image with using Docker layer caching

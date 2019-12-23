@@ -16,9 +16,9 @@ endef
 ### MAKE_TARGETS ###############################################################
 
 # Build an images and run tests
-.PHONY: all
-all:
-	@$(call IMAGE_VARIANTS_RECIPE,$(IMAGE_VARIANTS),all clean)
+.PHONY: all image
+all image:
+	@$(call IMAGE_VARIANTS_RECIPE,$(IMAGE_VARIANTS),image)
 
 # Pull images form Docker registry
 .PHONY: docker-pull
