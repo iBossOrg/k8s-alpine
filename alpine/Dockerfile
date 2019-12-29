@@ -20,6 +20,7 @@ RUN set -ex; \
   apk add --no-cache \
     bash \
     ca-certificates \
+    curl \
     less \
     openssl \
     su-exec \
