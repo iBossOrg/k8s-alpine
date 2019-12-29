@@ -18,7 +18,7 @@ endef
 # Build an images and run tests
 .PHONY: all image
 all image:
-	@$(call IMAGE_VARIANTS_RECIPE,$(IMAGE_VARIANTS),image)
+	@$(call IMAGE_VARIANTS_RECIPE,$(IMAGE_VARIANTS),all)
 
 # Pull images form Docker registry
 .PHONY: docker-pull

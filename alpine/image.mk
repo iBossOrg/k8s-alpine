@@ -7,13 +7,13 @@ TEST_VARS		+= OS_RELEASE
 
 ### MAKE_TARGETS ###############################################################
 
-# Build an image and run tests
-.PHONY: all
-all: _clean build start wait logs test
-
 # Build an image, run tests and delete all containers and work files
+.PHONY: all
+all: image clean
+
+# Build an image and run tests
 .PHONY: image
-image: all clean
+image: _clean build start wait logs test
 
 ### BUILD_TARGETS ##############################################################
 

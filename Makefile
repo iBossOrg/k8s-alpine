@@ -13,13 +13,9 @@ endef
 ### MAKE_TARGETS ###############################################################
 
 # Build all images
-.PHONY: all
-all: image
-
-# Build all images
-.PHONY: image
-image:
-	@$(call IMAGES_RECIPE,$(IMAGES),$@)
+.PHONY: all image
+all image:
+	@$(call IMAGES_RECIPE,$(IMAGES),all)
 
 # Delete all running containers and work files
 .PHONY: clean
