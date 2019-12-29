@@ -45,6 +45,7 @@ describe "Docker image", :test => :docker_image do
     packages = [
       "bash",
       "ca-certificates",
+      "curl",
       "less",
       "openssl",
       "su-exec",
@@ -63,14 +64,13 @@ describe "Docker image", :test => :docker_image do
 
   describe "Files" do
 
-    # KEEP IN SYNC WITH https://github.com/iBossOrg/docker-entrypoint-overlay
     # [file,                                            mode, user,   group,  [expectations]]
     files = [
-      ["/container",                                    755,  "root", "root", [:be_directory]],
-      ["/container/entrypoint",                                755,  "root", "root", [:be_file]],
+      ["/service",                                      755,  "root", "root", [:be_directory]],
+      ["/service/entrypoint",                           755,  "root", "root", [:be_file], :eq_sha256sum],
       ["/entrypoint",                                   755,  "root", "root", [:be_directory]],
       ["/entrypoint/10.default-config.sh",              644,  "root", "root", [:be_file], :eq_sha256sum],
-      ["/entrypoint/20.default-command.sh",             644,  "root", "root", [:be_file]],
+      ["/entrypoint/20.default-command.sh",             644,  "root", "root", [:be_file], :eq_sha256sum],
       ["/etc/inputrc",                                  644,  "root", "root", [:be_file], :eq_sha256sum],
       ["/etc/profile.d/profile.sh",                     644,  "root", "root", [:be_file], :eq_sha256sum],
       ["/etc/ssl/openssl.cnf",                          644,  "root", "root", [:be_file], :eq_sha256sum],

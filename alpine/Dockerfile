@@ -5,7 +5,7 @@ ARG BASE_IMAGE=alpine
 FROM ${BASE_IMAGE} AS builder
 COPY rootfs /app
 RUN set -ex; \
-  chmod +x /app/container/entrypoint
+  chmod +x /app/service/entrypoint
 
 ### IMAGE ######################################################################
 
@@ -33,4 +33,4 @@ RUN set -ex; \
 
 COPY --from=builder /app /
 
-ENTRYPOINT ["/container/entrypoint"]
+ENTRYPOINT ["/service/entrypoint"]

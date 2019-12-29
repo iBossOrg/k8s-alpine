@@ -39,7 +39,7 @@ debug() {
 set -e
 
 # Lock against parallel execution
-exec 100</container/entrypoint
+exec 100</service/entrypoint
 flock -x 100
 
 # Run entrypoint scripts
