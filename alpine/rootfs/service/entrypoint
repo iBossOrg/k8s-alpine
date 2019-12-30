@@ -57,8 +57,8 @@ if [ "$$" == "1" ]; then
   set -- $(which tini) -- "$@"
 fi
 
-# Execute with different privileges
-if [ -n "${RUN_AS_USER}" ]; then
+# Execute with non-root privileges
+if [ "${EUID}" -eq 0 -a -n "${RUN_AS_USER}" ]; then
   info "Running as '${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}}'"
   set -- $(which su-exec) ${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}} "$@"
 fi
