@@ -20,46 +20,34 @@ URL_PATTERN="((([a-zA-Z]+)://)?(([a-zA-Z0-9._-]+|\[[0-9a-fA-F:.]+\])(:([0-9]+))?
 wait_for_dns () {
   local URL
   local HOST
-  local TIMEOUT=$1; shift
+  local START
+  local DURATION
+  local TIMEOUT
   for URL in $*; do
     # Extract hostname from URL
     HOST=$(sed -E "s;^${URL_PATTERN}$;\5;" <<< "${URL}")
     : ${HOST:=localhost}
-    local i=0
-    local j=0
-    local start="$(date "+%s")"
-    while ! timeout 1 getent ahosts ${HOST} >/dev/null 2>&1; do
-      if [ ${i} -eq 0 ]; then
-        debug "Waiting for '${HOST}' name resolution up to ${TIMEOUT}s"
-      fi
-      i=$(($(date "+%s")-start))
-      if [ ${i} -ge ${TIMEOUT} ]; then
-        error "'${HOST}' name resolution timed out after ${i}s"
+    START="$(date "+%s")"
+    DURATION="0"
+    TIMEOUT="${WAIT_FOR_TIMEOUT:=60}"
+    # Wait for DNS resolution
+    debug "Waiting for '${HOST}' name resolution up to ${TIMEOUT}s"
+    while ! timeout ${WAIT_FOR_TIMEOUT} getent ahosts ${HOST} &>/dev/null; do
+      DURATION="$(("$(date "+%s")"-START))"
+      WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
+      if [ ${WAIT_FOR_TIMEOUT} -le 0 ]; then
+        error "'${HOST}' name resolution timed out after $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
         exit 1
       fi
-      if [ "${i}" = "${j}" ]; then
-        sleep 1
-        i=$((i+1))
-      fi
-      j="${i}"
+      sleep 1
     done
-    if [ ${i} -gt 0 ]; then
-      info "Got the '${HOST}' address $(
-        getent ahosts ${HOST} |
-        grep "STREAM ${HOST}" |
-        cut -d ' ' -f 1 |
-        tr "\n" "," |
-        sed -E "s/,$//"
-      ) in ${i}s"
-    else
-      debug "Got the '${HOST}' address $(
-        getent ahosts ${HOST} |
-        grep "STREAM ${HOST}" |
-        cut -d ' ' -f 1 |
-        tr "\n" "," |
-        sed -E "s/,$//"
-      ) in ${i}s"
-    fi
+    info "Got the '${HOST}' address $(
+      getent ahosts ${HOST} |
+      grep "STREAM ${HOST}" |
+      cut -d ' ' -f 1 |
+      tr "\n" "," |
+      sed -E "s/,$//"
+    ) in $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
   done
 }
 
@@ -70,7 +58,9 @@ wait_for_tcp () {
   local URL
   local HOST
   local PORT
-  local TIMEOUT=$1; shift
+  local START
+  local DURATION
+  local TIMEOUT
   for URL in $*; do
     # Extract protocol, hostname and TCP port from URL
     PROTO=$(sed -E "s;^${URL_PATTERN}$;\3;" <<< "${URL}")
@@ -111,30 +101,23 @@ wait_for_tcp () {
     *)
       : ${PORT:=0} ;;
     esac
-    wait_for_dns ${TIMEOUT} ${HOST}
-    local i=0
-    local j=0
-    local start="$(date "+%s")"
-    while ! timeout 1 nc -z ${HOST} ${PORT} >/dev/null 2>&1; do
-      if [ ${i} -eq 0 ]; then
-        debug "Waiting for the connection to tcp://${HOST}:${PORT} up to ${TIMEOUT}s"
-      fi
-      i=$(($(date "+%s")-start))
-      if [ ${i} -ge ${TIMEOUT} ]; then
-        error "Connection to tcp://${HOST}:${PORT} timed out after ${i}s"
+    # Wait for DNS resolution
+    wait_for_dns ${HOST}
+    # Wait for TCP connection
+    START="$(date "+%s")"
+    DURATION="0"
+    TIMEOUT="${WAIT_FOR_TIMEOUT:=60}"
+    debug "Waiting for the connection to tcp://${HOST}:${PORT} up to ${TIMEOUT}s"
+    while ! timeout ${WAIT_FOR_TIMEOUT} nc -z ${HOST} ${PORT} &>/dev/null; do
+      DURATION="$(("$(date "+%s")"-START))"
+      WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
+      if [ ${WAIT_FOR_TIMEOUT} -le 0 ]; then
+        error "Connection to tcp://${HOST}:${PORT} timed out after $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
         exit 1
       fi
-      if [ "${i}" = "${j}" ]; then
-        sleep 1
-        i=$((i+1))
-      fi
-      j="${i}"
+      sleep 1
     done
-    if [ ${i} -gt 0 ]; then
-      info "Got the connection to tcp://${HOST}:${PORT} in ${i}s"
-    else
-      debug "Got the connection to tcp://${HOST}:${PORT} in ${i}s"
-    fi
+    info "Got the connection to tcp://${HOST}:${PORT} in $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
   done
 }
 
@@ -145,7 +128,9 @@ wait_for_url () {
   local URL
   local PROTO
   local CURL_OPTS
-  local TIMEOUT=$1; shift
+  local START
+  local DURATION
+  local TIMEOUT
   for URL in $*; do
     # Extract protocol, hostname and TCP port from URL
     PROTO=$(sed -E "s;^${URL_PATTERN}$;\3;" <<< "${URL}")
@@ -161,38 +146,31 @@ wait_for_url () {
     *)
       CURL_OPTS="" ;;
     esac
-    wait_for_dns ${TIMEOUT} ${URL}
-    local i=0
-    local j=0
-    local start="$(date "+%s")"
-    while ! curl -fksS ${CURL_OPTS} ${URL} >/dev/null 2>&1; do
-      if [ ${i} -eq 0 ]; then
-        debug "Waiting for the connection to ${URL} up to ${TIMEOUT}s"
-      fi
-      i=$(($(date "+%s")-start))
-      if [ ${i} -ge ${TIMEOUT} ]; then
-        error "Connection to ${URL} timed out after ${i}s"
+    # Wait for DNS resolution
+    wait_for_dns ${URL}
+    # Wait for URL connection
+    START="$(date "+%s")"
+    DURATION="0"
+    TIMEOUT="${WAIT_FOR_TIMEOUT:=60}"
+    debug "Waiting for the connection to ${URL} up to ${TIMEOUT}s"
+    while ! timeout ${WAIT_FOR_TIMEOUT} curl -fksS ${CURL_OPTS} ${URL} &>/dev/null; do
+      DURATION="$(("$(date "+%s")"-START))"
+      WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
+      if [ ${WAIT_FOR_TIMEOUT} -le 0 ]; then
+        error "Connection to ${URL} timed out after $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
         exit 1
       fi
-      if [ "${i}" = "${j}" ]; then
-        sleep 1
-        i=$((i+1))
-      fi
-      j="${i}"
+      sleep 1
     done
-    if [ ${i} -gt 0 ]; then
-      info "Got the connection to ${URL} in ${i}s"
-    else
-      debug "Got the connection to ${URL} in ${i}s"
-    fi
+    info "Got the connection to ${URL} in $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
   done
 }
 
 ### WAIT_FOR ###################################################################
 
 # Waits for other services to start
-wait_for_dns ${WAIT_FOR_DNS_TIMEOUT:-${WAIT_FOR_TIMEOUT:-60}} ${WAIT_FOR_DNS}
-wait_for_tcp ${WAIT_FOR_TCP_TIMEOUT:-${WAIT_FOR_TIMEOUT:-60}} ${WAIT_FOR_TCP}
-wait_for_url ${WAIT_FOR_URL_TIMEOUT:-${WAIT_FOR_TIMEOUT:-60}} ${WAIT_FOR_URL}
+wait_for_dns ${WAIT_FOR_DNS}
+wait_for_tcp ${WAIT_FOR_TCP}
+wait_for_url ${WAIT_FOR_URL}
 
 ################################################################################
