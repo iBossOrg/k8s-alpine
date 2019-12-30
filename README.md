@@ -7,6 +7,7 @@ Alpine Linux base image modified for Kubernetes friendliness.
 * Official [Alpine Linux image](https://hub.docker.com/_/alpine/) as a base system.
 * `bash` as a shell.
 * `ca-certificates` contains common CA certificates.
+* `curl` for data transfers using various protocols.
 * `openssl` for PKI and TLS.
 * `su_exec` for process impersonation.
 * `tini` as an init process.
