@@ -39,9 +39,9 @@ describe "Docker container", :test => :docker_container do
     # TODO: /service/entrypoint.d
     # TODO: /entrypoint.d/20.default-command.sh
 
-    wait_for_script = "/entrypoint/90.wait-for.sh"
+    ### /entrypoint.d/80-wait-for.sh ###########################################
 
-    ### /entrypoint.d/90-wait-for.sh ###########################################
+    wait_for_script = "/entrypoint/80.wait-for.sh"
 
     describe wait_for_script do
       context "#wait_for_dns" do

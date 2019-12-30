@@ -71,7 +71,7 @@ describe "Docker image", :test => :docker_image do
       ["/entrypoint",                                   755,  "root", "root", [:be_directory]],
       ["/entrypoint/10.default-config.sh",              644,  "root", "root", [:be_file], :eq_sha256sum],
       ["/entrypoint/20.default-command.sh",             644,  "root", "root", [:be_file], :eq_sha256sum],
-      ["/entrypoint/90.wait-for.sh",                    644,  "root", "root", [:be_file], :eq_sha256sum],
+      ["/entrypoint/80.wait-for.sh",                    644,  "root", "root", [:be_file], :eq_sha256sum],
       ["/etc/inputrc",                                  644,  "root", "root", [:be_file], :eq_sha256sum],
       ["/etc/profile.d/profile.sh",                     644,  "root", "root", [:be_file], :eq_sha256sum],
       ["/etc/ssl/openssl.cnf",                          644,  "root", "root", [:be_file], :eq_sha256sum],
