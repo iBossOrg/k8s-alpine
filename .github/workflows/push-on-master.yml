@@ -24,14 +24,11 @@ jobs:
 
       - name: Pull images
         run: make docker-pull
-        working-directory: ./alpine
         continue-on-error: true
 
       - name: Build and test images
         run:  make all
         env: { RSPEC_FORMAT: doc }
-        working-directory: ./alpine
 
       - name: Publish images
         run:  make docker-push
-        working-directory: ./alpine

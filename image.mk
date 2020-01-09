@@ -1,19 +1,30 @@
+### BASE_IMAGE #################################################################
+
+BASE_IMAGE_NAME		?= $(DOCKER_NAME)
+BASE_IMAGE_TAG		?= $(DOCKER_IMAGE_TAG)
+
 ### DOCKER_IMAGE ###############################################################
 
-include $(PROJECT_DIR)/config.mk
+DOCKER_VENDOR		?= iboss
+DOCKER_NAME		?= alpine
+DOCKER_IMAGE_TAG	?= latest
+DOCKER_IMAGE_DESC	?= Alpine Linux base image modified for Kubernetes friendliness.
+DOCKER_IMAGE_URL	?= https://github.com/iBossOrg/k8s-alpine
+
+### DOCKER_TEST ################################################################
 
 OS_RELEASE		?= $(BASE_IMAGE_TAG)
 TEST_VARS		+= OS_RELEASE
 
 ### MAKE_TARGETS ###############################################################
 
-# Build an image, run tests and delete all containers and work files
-.PHONY: all
-all: image clean
-
 # Build an image and run tests
+.PHONY: all
+all: build start wait logs test
+
+# Delete all running containers and work files, build an image and run tests
 .PHONY: image
-image: _clean build start wait logs test
+image: _clean all
 
 ### BUILD_TARGETS ##############################################################
 
@@ -91,7 +102,7 @@ clean: docker-clean
 # Helper that gives the opportunity to call the clean target twice
 .PHONY: _clean
 _clean:
-	@$(MAKE) docker-clean
+	@$(MAKE) clean
 
 ### DOCKER_IMAGE_MK ############################################################
 

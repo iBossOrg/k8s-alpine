@@ -93,13 +93,15 @@ Use the command `make` in the project directory:
 make all                      # Build all images and run tests
 make image                    # Build all images and run tests
 make clean                    # Delete all running containers and work files
+make docker-pull              # Pull all images from the Docker Registry
+make docker-push              # Push all images into the Docker Registry
 ```
 
-Use the command `make` in `alpine/latest` or `alpine/edge` directories:
+Use the command `make` in `latest` or `edge` directories:
 
 ```bash
 make all                      # Build an image and run tests
-make image                    # Build an image, run tests and delete all containers and work files
+make image                    # Delete all running containers and work files, build an image and run tests
 make build                    # Build an image
 make rebuild                  # Build an image without using Docker layer caching
 make vars                     # Show the make variables
@@ -118,10 +120,7 @@ make stop                     # Stop the containers
 make down                     # Delete the containers
 make clean                    # Delete all running containers and work files
 make docker-pull              # Pull all images from the Docker Registry
-make docker-pull-dependencies # Pull the project image dependencies from the Docker Registry
-make docker-pull-image        # Pull the project image from the Docker Registry
-make docker-pull-testimage    # Pull the test image from the Docker Registry
-make docker-push              # Push the project image into the Docker Registry
+make docker-push              # Push the image into the Docker Registry
 ```
 
 Please read the [Contribution Guidelines](CONTRIBUTING.md), and ensure you are signing all your commits with [DCO sign-off](CONTRIBUTING.md#developer-certification-of-origin-dco).
