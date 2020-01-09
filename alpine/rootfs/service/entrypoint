@@ -53,13 +53,13 @@ fi
 # If the process namespace in Kubernetes Pod is not shared,
 # we must use our own init process
 if [ "$$" == "1" ]; then
-  info "Using '$(which tini)' as an init process"
+  debug "Using '$(which tini)' as an init process"
   set -- $(which tini) -- "$@"
 fi
 
 # Execute with non-root privileges
 if [ "${EUID}" -eq 0 -a -n "${RUN_AS_USER}" ]; then
-  info "Running as '${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}}'"
+  debug "Running as '${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}}'"
   set -- $(which su-exec) ${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}} "$@"
 fi
 
@@ -67,7 +67,7 @@ fi
 flock -u 100
 
 # Execute command
-debug "Executing command: $(printf "[%s]", "$@")"
+info "Executing command: $(printf "[%s]", "$@")"
 exec "$@"
 
 ################################################################################

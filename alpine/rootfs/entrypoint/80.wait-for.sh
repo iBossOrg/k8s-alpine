@@ -41,7 +41,7 @@ wait_for_dns () {
       fi
       sleep 1
     done
-    info "Got the '${HOST}' address $(
+    debug "Got the '${HOST}' address $(
       getent ahosts ${HOST} |
       grep "STREAM ${HOST}" |
       cut -d ' ' -f 1 |
