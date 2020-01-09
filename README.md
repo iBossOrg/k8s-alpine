@@ -15,6 +15,8 @@ Alpine Linux base image modified for Kubernetes friendliness.
 
 ## Usage
 
+### Base image
+
 This Docker image is intended to serve as a base for other images.
 
 You can start with this sample `Dockerfile` file:
@@ -32,6 +34,44 @@ and overwrite entrypoint defaults in file `rootfs/entrypoint/10.default-config.s
 ```bash
 DEFAULT_COMMAND="MY_COMMAND"
 RUN_AS_USER="MY_USER"
+```
+
+| Variable | Default value | Description |
+| -------- | ------------- | ----------- |
+| DEFAULT_COMMAND | /bin/bash | Default command if no command is given or the first argument is an option. |
+| WAIT_FOR_DNS | - | Wait for DNS name resolution. List of DNS hosts or URLs separated by space. |
+| WAIT_FOR_TCP | - | Wait for TCP connection. List of host:port tuples or URLs separated by space. |
+| WAIT_FOR_URL | - | Wait for URL connection. List of URLs separated by space. |
+| WAIT_FOR_TIMEOUT | 60 | Timeout for waiting to all services in seconds. |
+
+### Init container
+
+This Docker image can be used as an init container awaiting the availability of other services:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # ...
+spec:
+  selector:
+    matchLabels:
+      # ...
+  template:
+    metadata:
+      labels:
+        # ...
+    spec:
+      initContainers:
+      - name: wait-for-service
+        image: iboss/alpine:latest
+        env:
+        - name: WAIT_FOR_URL
+          value: https://service/healthz
+        - name: WAIT_FOR_TIMEOUT
+          value: 60
+      containers:
+        # ...
 ```
 
 ## Reporting Issues
