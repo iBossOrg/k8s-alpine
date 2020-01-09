@@ -37,7 +37,7 @@ wait_for_dns () {
       WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
       if [ ${WAIT_FOR_TIMEOUT} -le 0 ]; then
         error "'${HOST}' name resolution timed out after $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
-        exit 1
+        exit ${WAIT_FOR_EXIT_CODE:-1}
       fi
       sleep 1
     done
@@ -113,7 +113,7 @@ wait_for_tcp () {
       WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
       if [ ${WAIT_FOR_TIMEOUT} -le 0 ]; then
         error "Connection to tcp://${HOST}:${PORT} timed out after $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
-        exit 1
+        exit ${WAIT_FOR_EXIT_CODE:-1}
       fi
       sleep 1
     done
@@ -158,7 +158,7 @@ wait_for_url () {
       WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
       if [ ${WAIT_FOR_TIMEOUT} -le 0 ]; then
         error "Connection to ${URL} timed out after $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
-        exit 1
+        exit ${WAIT_FOR_EXIT_CODE:-1}
       fi
       sleep 1
     done

@@ -43,6 +43,7 @@ RUN_AS_USER="MY_USER"
 | WAIT_FOR_TCP | - | Wait for TCP connection. List of host:port tuples or URLs separated by space. |
 | WAIT_FOR_URL | - | Wait for URL connection. List of URLs separated by space. |
 | WAIT_FOR_TIMEOUT | 60 | Timeout for waiting to all services in seconds. |
+| WAIT_FOR_EXIT_CODE | 1 | Exit code when timeout expires. |
 
 ### Init container
 
