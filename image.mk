@@ -29,11 +29,22 @@ image: all
 
 # Lint project files
 .PHONY: lint
-lint: shellcheck
+lint: docker-lint shellcheck
+
+# Lint Docker files
+.PHONY: docker-lint
+docker-lint:
+	@echo "+++ hadolint help: https://github.com/hadolint/hadolint#rules" > /dev/stderr
+	@set -x; \
+	docker run --rm \
+	--volume $(PROJECT_DIR)/Dockerfile:/Dockerfile \
+	--volume $(PROJECT_DIR)/.hadolint.yaml:/.hadolint.yaml \
+	hadolint/hadolint hadolint Dockerfile
 
 # Lint shell scripts
 .PHONY: shellcheck
 shellcheck:
+	@echo "+++ shellcheck help: https://github.com/koalaman/shellcheck/wiki/Checks" > /dev/stderr
 	@for FILE in $(shell cd $(PROJECT_DIR); ls rootfs/service/* rootfs/entrypoint/*); do ( \
 		set -x; \
 		docker run --rm --volume "$(PROJECT_DIR):/mnt" koalaman/shellcheck:stable $${FILE} \
