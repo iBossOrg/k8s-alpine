@@ -92,20 +92,22 @@ git clone https://github.com/ibossorg/k8s-alpine
 Use the command `make` in the project directory:
 
 ```bash
-make all                      # Build all images and run tests
-make image                    # Build all images and run tests
-make clean                    # Delete all running containers and work files
-make docker-pull              # Pull all images from the Docker Registry
-make docker-push              # Push all images into the Docker Registry
+make all                      # Build and test all images
+make images                   # Build and test all images
+make pull                     # Pull all images form Docker registry
+make publish                  # Publish all images into Docker registry
+make clean                    # Clean all images
 ```
 
 Use the command `make` in `latest` or `edge` directories:
 
 ```bash
 make all                      # Build an image and run tests
-make image                    # Delete all running containers and work files, build an image and run tests
+make image                    # Build an image, run tests, and then clean
+make lint                     # Lint project files
+make pull                     # Pull all images from the Docker Registry
 make build                    # Build an image
-make rebuild                  # Build an image without using Docker layer caching
+make rebuild                  # Rebuild an image
 make vars                     # Show the make variables
 make up                       # Delete the containers and then run them fresh
 make create                   # Create the containers
@@ -120,9 +122,8 @@ make tsh                      # Run the shell in the test container
 make restart                  # Restart the containers
 make stop                     # Stop the containers
 make down                     # Delete the containers
-make clean                    # Delete all running containers and work files
-make docker-pull              # Pull all images from the Docker Registry
-make docker-push              # Push the image into the Docker Registry
+make publish                  # Publish the image into the Docker Registry
+make clean                    # Delete the containers and working files
 ```
 
 Please read the [Contribution Guidelines](CONTRIBUTING.md), and ensure you are signing all your commits with [DCO sign-off](CONTRIBUTING.md#developer-certification-of-origin-dco).

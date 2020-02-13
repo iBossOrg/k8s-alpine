@@ -20,13 +20,32 @@ TEST_VARS		+= OS_RELEASE
 
 # Build an image and run tests
 .PHONY: all
-all: build start wait logs test
+all: lint build start wait logs test
 
 # Delete all running containers and work files, build an image and run tests
 .PHONY: image
-image: _clean all
+image: all
+	@$(MAKE) clean
 
-### BUILD_TARGETS ##############################################################
+# Lint project files
+.PHONY: lint
+lint: shellcheck
+
+# Lint shell scripts
+.PHONY: shellcheck
+shellcheck:
+	@for FILE in $(shell cd $(PROJECT_DIR); ls rootfs/service/* rootfs/entrypoint/*); do ( \
+		set -x; \
+		docker run --rm --volume "$(PROJECT_DIR):/mnt" koalaman/shellcheck:stable $${FILE} \
+	); done
+
+# Pull all images from the Docker Registry
+.PHONY: pull
+pull: docker-pull
+
+# Publish the image into the Docker Registry
+.PHONY: publish
+publish: build docker-push
 
 # Build an image with using Docker layer caching
 .PHONY: build
@@ -35,8 +54,6 @@ build: docker-build
 # Build an image without using Docker layer caching
 .PHONY: rebuild
 rebuild: docker-rebuild
-
-### EXECUTOR_TARGETS ###########################################################
 
 # Show the make variables
 .PHONY: vars
@@ -95,14 +112,9 @@ stop: docker-stop
 .PHONY: down rm
 down rm: docker-rm
 
-# Delete all containers and work files
+# Delete the containers and working files
 .PHONY: clean
 clean: docker-clean
-
-# Helper that gives the opportunity to call the clean target twice
-.PHONY: _clean
-_clean:
-	@$(MAKE) clean
 
 ### DOCKER_IMAGE_MK ############################################################
 

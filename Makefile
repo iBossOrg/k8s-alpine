@@ -1,47 +1,29 @@
-### DOCKER_IMAGE ###############################################################
+SUBDIRS		?= latest edge
+TARGET		?= image
 
-IMAGE_VARIANTS		?= latest edge
+# Build and test all images
+.PHONY: all images
+all images: $(SUBDIRS)
 
-# $(call IMAGE_VARIANTS_RECIPE,$(IMAGE_VARIANTS),$(TARGET))
-define IMAGE_VARIANTS_RECIPE
-for IMAGE_VARIANT in $(1); do \
-	echo ; \
-	echo "### k8s-alpine/$${IMAGE_VARIANT}"; \
-	echo ; \
-	cd $(CURDIR)/$${IMAGE_VARIANT}; \
-	make $(2); \
-done
-endef
+# Build and test the image
+.PHONY: $(SUBDIRS)
+$(SUBDIRS):
+	@echo
+	@echo "===> alpine:$@"
+	@echo
+	@cd $@; make $(TARGET)
 
-### MAKE_TARGETS ###############################################################
+# Pull all images from Docker registry
+.PHONY: pull
+pull:
+	@$(MAKE) all TARGET=pull
 
-# Build all images and run tests
-.PHONY: all
-all: image
+# Publish all images into Docker registry
+.PHONY: publish
+publish:
+	@$(MAKE) all TARGET=publish
 
-# Build all images and run tests
-.PHONY: image
-image:
-	@$(call IMAGE_VARIANTS_RECIPE,$(IMAGE_VARIANTS),image clean)
-
-# Pull images form Docker registry
-.PHONY: docker-pull
-docker-pull:
-	-@$(call IMAGE_VARIANTS_RECIPE,$(IMAGE_VARIANTS),$@)
-
-# Push images to Docker registry
-.PHONY: docker-push
-docker-push:
-	@$(call IMAGE_VARIANTS_RECIPE,$(IMAGE_VARIANTS),$@)
-
-# Prune Docker engine
-.PHONY: docker-prune
-docker-prune:
-	@docker system prune -f
-
-# Delete all running containers and work files
+# Clean all images
 .PHONY: clean
 clean:
-	@$(call IMAGE_VARIANTS_RECIPE,$(IMAGE_VARIANTS),$@)
-
-################################################################################
+	@$(MAKE) all TARGET=clean

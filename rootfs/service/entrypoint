@@ -6,30 +6,31 @@
 msg() {
   local LEVEL=$1; shift
   local ENTRYPOINT=$1; shift
-  local TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  ENTRYPOINT=$(basename ${ENTRYPOINT})
+  local TIMESTAMP
+  TIMESTAMP="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  ENTRYPOINT="$(basename "${ENTRYPOINT}")"
 
-  echo "$(printf "[%-24s][%-5s][%-25s] $*" ${TIMESTAMP} ${LEVEL} ${ENTRYPOINT})"
+  printf "[%-24s][%-5s][%-25s] $*\n" "${TIMESTAMP}" "${LEVEL}" "${ENTRYPOINT}"
 }
 
 # Messages with severity
 error() {
-  msg "ERROR" ${ENTRYPOINT:-$0} "$*"
+  msg "ERROR" "${ENTRYPOINT:-$0}" "$*"
 }
 
 warn() {
-  msg "WARN" ${ENTRYPOINT:-$0} "$*"
+  msg "WARN" "${ENTRYPOINT:-$0}" "$*"
 }
 
 info() {
-  if [ -n "${ENTRYPOINT_INFO}" -o -n "${ENTRYPOINT_DEBUG}" ]; then
-    msg "INFO" ${ENTRYPOINT:-$0} "$*"
+  if [ -n "${ENTRYPOINT_INFO}" ] || [ -n "${ENTRYPOINT_DEBUG}" ]; then
+    msg "INFO" "${ENTRYPOINT:-$0}" "$*"
   fi
 }
 
 debug() {
   if [ -n "${ENTRYPOINT_DEBUG}" ]; then
-    msg "DEBUG" ${ENTRYPOINT:-$0} "$*"
+    msg "DEBUG" "${ENTRYPOINT:-$0}" "$*"
   fi
 }
 
@@ -45,7 +46,8 @@ flock -x 100
 # Run entrypoint scripts
 if [ -e /entrypoint ]; then
   for ENTRYPOINT in /entrypoint/*.sh; do
-    . ${ENTRYPOINT}
+    # shellcheck source=/dev/null
+    . "${ENTRYPOINT}"
   done
   unset ENTRYPOINT
 fi
@@ -53,14 +55,14 @@ fi
 # If the process namespace in Kubernetes Pod is not shared,
 # we must use our own init process
 if [ "$$" == "1" ]; then
-  debug "Using '$(which tini)' as an init process"
-  set -- $(which tini) -- "$@"
+  debug "Using '$(command -v tini)' as an init process"
+  set -- "$(command -v tini)" -- "$@"
 fi
 
 # Execute with non-root privileges
-if [ "${EUID}" -eq 0 -a -n "${RUN_AS_USER}" ]; then
+if [ "${EUID}" -eq 0 ] && [ -n "${RUN_AS_USER}" ]; then
   debug "Running as '${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}}'"
-  set -- $(which su-exec) ${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}} "$@"
+  set -- "$(command -v su-exec)" "${RUN_AS_USER}:${RUN_AS_GROUP:-${RUN_AS_USER}}" "$@"
 fi
 
 # Unlock

@@ -23,10 +23,11 @@ wait_for_dns () {
   local START
   local DURATION
   local TIMEOUT
-  for URL in $*; do
+  for URL in "$@"; do
+    [ -z "${URL}" ] && continue
     # Extract hostname from URL
     HOST=$(sed -E "s;^${URL_PATTERN}$;\5;" <<< "${URL}")
-    : ${HOST:=localhost}
+    : "${HOST:=localhost}"
     START="$(date "+%s")"
     DURATION="0"
     TIMEOUT="${WAIT_FOR_TIMEOUT:=60}"
@@ -37,7 +38,7 @@ wait_for_dns () {
       WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
       if [ ${WAIT_FOR_TIMEOUT} -le 0 ]; then
         error "'${HOST}' name resolution timed out after $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
-        exit ${WAIT_FOR_EXIT_CODE:-1}
+        exit "${WAIT_FOR_EXIT_CODE:-1}"
       fi
       sleep 1
     done
@@ -61,45 +62,46 @@ wait_for_tcp () {
   local START
   local DURATION
   local TIMEOUT
-  for URL in $*; do
+  for URL in "$@"; do
+    [ -z "${URL}" ] && continue
     # Extract protocol, hostname and TCP port from URL
     PROTO=$(sed -E "s;^${URL_PATTERN}$;\3;" <<< "${URL}")
     HOST=$(sed -E "s;^${URL_PATTERN}$;\5;" <<< "${URL}")
     PORT=$(sed -E "s;^${URL_PATTERN}$;\7;" <<< "${URL}")
-    : ${HOST:=localhost}
+    : "${HOST:=localhost}"
     case "${PROTO}" in
     ftp)
-      : ${PORT:=21} ;;
+      : "${PORT:=21}" ;;
     http)
-      : ${PORT:=80} ;;
+      : "${PORT:=80}" ;;
     https)
-      : ${PORT:=443} ;;
+      : "${PORT:=443}" ;;
     imap)
-      : ${PORT:=143} ;;
+      : "${PORT:=143}" ;;
     imaps)
-      : ${PORT:=993} ;;
+      : "${PORT:=993}" ;;
     ldap)
-      : ${PORT:=389} ;;
+      : "${PORT:=389}" ;;
     ldaps)
-      : ${PORT:=636} ;;
+      : "${PORT:=636}" ;;
     pop3)
-      : ${PORT:=110} ;;
+      : "${PORT:=110}" ;;
     pop3s)
-      : ${PORT:=995} ;;
+      : "${PORT:=995}" ;;
     scp)
-      : ${PORT:=22} ;;
+      : "${PORT:=22}" ;;
     sftp)
-      : ${PORT:=22} ;;
+      : "${PORT:=22}" ;;
     ssh)
-      : ${PORT:=22} ;;
+      : "${PORT:=22}" ;;
     smb)
-      : ${PORT:=445} ;;
+      : "${PORT:=445}" ;;
     smtp)
-      : ${PORT:=25} ;;
+      : "${PORT:=25}" ;;
     smtps)
-      : ${PORT:=465} ;;
+      : "${PORT:=465}" ;;
     *)
-      : ${PORT:=0} ;;
+      : "${PORT:=0}" ;;
     esac
     # Wait for DNS resolution
     wait_for_dns ${HOST}
@@ -113,7 +115,7 @@ wait_for_tcp () {
       WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
       if [ ${WAIT_FOR_TIMEOUT} -le 0 ]; then
         error "Connection to tcp://${HOST}:${PORT} timed out after $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
-        exit ${WAIT_FOR_EXIT_CODE:-1}
+        exit "${WAIT_FOR_EXIT_CODE:-1}"
       fi
       sleep 1
     done
@@ -131,7 +133,8 @@ wait_for_url () {
   local START
   local DURATION
   local TIMEOUT
-  for URL in $*; do
+  for URL in "$@"; do
+    [ -z "${URL}" ] && continue
     # Extract protocol, hostname and TCP port from URL
     PROTO=$(sed -E "s;^${URL_PATTERN}$;\3;" <<< "${URL}")
     case "${PROTO}" in
@@ -147,18 +150,18 @@ wait_for_url () {
       CURL_OPTS="" ;;
     esac
     # Wait for DNS resolution
-    wait_for_dns ${URL}
+    wait_for_dns "${URL}"
     # Wait for URL connection
     START="$(date "+%s")"
     DURATION="0"
     TIMEOUT="${WAIT_FOR_TIMEOUT:=60}"
     debug "Waiting for the connection to ${URL} up to ${TIMEOUT}s"
-    while ! timeout ${WAIT_FOR_TIMEOUT} curl -fksS ${CURL_OPTS} ${URL} &>/dev/null; do
+    while ! timeout ${WAIT_FOR_TIMEOUT} curl -fksS ${CURL_OPTS} "${URL}" &>/dev/null; do
       DURATION="$(("$(date "+%s")"-START))"
       WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
       if [ ${WAIT_FOR_TIMEOUT} -le 0 ]; then
         error "Connection to ${URL} timed out after $((TIMEOUT-WAIT_FOR_TIMEOUT))s"
-        exit ${WAIT_FOR_EXIT_CODE:-1}
+        exit "${WAIT_FOR_EXIT_CODE:-1}"
       fi
       sleep 1
     done
@@ -169,8 +172,8 @@ wait_for_url () {
 ### WAIT_FOR ###################################################################
 
 # Waits for other services to start
-wait_for_dns ${WAIT_FOR_DNS}
-wait_for_tcp ${WAIT_FOR_TCP}
-wait_for_url ${WAIT_FOR_URL}
+wait_for_dns "${WAIT_FOR_DNS}"
+wait_for_tcp "${WAIT_FOR_TCP}"
+wait_for_url "${WAIT_FOR_URL}"
 
 ################################################################################

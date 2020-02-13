@@ -17,19 +17,19 @@ jobs:
       - name: Checkout Mk
         run:  git clone https://github.com/iBossOrg/Mk ../Mk
 
-      - name: Login to registry
+      - name: Login to Docker registry
         uses: azure/docker-login@v1
         with:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Pull images
-        run: make docker-pull
+        run: make pull
         continue-on-error: true
 
       - name: Build and test images
-        run:  make all
+        run:  make images
         env: { RSPEC_FORMAT: doc }
 
       - name: Publish images
-        run:  make docker-push
+        run:  make publish
