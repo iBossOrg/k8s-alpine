@@ -56,7 +56,7 @@ pull: docker-pull
 
 # Publish the image into the Docker Registry
 .PHONY: publish
-publish: build docker-push
+publish: docker-push
 
 # Build an image with using Docker layer caching
 .PHONY: build
