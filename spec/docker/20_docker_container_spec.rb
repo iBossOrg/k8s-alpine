@@ -82,7 +82,7 @@ describe "Docker container", :test => :docker_container do
         [
           ["service:8080",                        0, "Got the connection to tcp://service:8080 in \\d+s"],
           ["http://service:8080/test",            0, "Got the connection to tcp://service:8080 in \\d+s"],
-          ["imaps://imap.gmail.com",              0, "Got the connection to tcp://imap.gmail.com:993 in \\d+s"],
+          ["smtp://smtp.gmail.com",               0, "Got the connection to tcp://smtp.gmail.com:25 in \\d+s"],
           ["http://service/test",                 1, "Connection to tcp://service:80 timed out after \\d+s"],
           ["https://nonexistent:8888/test",       1, "'nonexistent' name resolution timed out after \\d+s"],
         ].each do |url, exit_status, match|
@@ -114,7 +114,6 @@ describe "Docker container", :test => :docker_container do
         # [url,                                   exit_status, match]
         [
           ["http://service:8080/test",            0, "Got the connection to http://service:8080/test in \\d+s"],
-          ["imaps://imap.gmail.com",              0, "Got the connection to imaps://imap.gmail.com in \\d+s"],
           ["smtp://smtp.gmail.com",               0, "Got the connection to smtp://smtp.gmail.com in \\d+s"],
           ["http://service/test",                 1, "Connection to http://service/test timed out after \\d+s"],
           ["https://nonexistent:8888/test",       1, "'nonexistent' name resolution timed out after \\d+s"],
