@@ -8,10 +8,7 @@ all images: $(SUBDIRS)
 # Build and test the image
 .PHONY: $(SUBDIRS)
 $(SUBDIRS):
-	@echo
-	@echo "===> alpine:$@"
-	@echo
-	@cd $@; make $(TARGET)
+	@cd $@; make display-version-header $(TARGET)
 
 # Pull all images from Docker registry
 .PHONY: pull
