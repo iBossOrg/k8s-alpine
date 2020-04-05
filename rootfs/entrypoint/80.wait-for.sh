@@ -156,6 +156,7 @@ wait_for_url () {
     DURATION="0"
     TIMEOUT="${WAIT_FOR_TIMEOUT:=60}"
     debug "Waiting for the connection to ${URL} up to ${TIMEOUT}s"
+    # shellcheck disable=SC2086
     while ! timeout ${WAIT_FOR_TIMEOUT} curl -fksS ${CURL_OPTS} "${URL}" &>/dev/null; do
       DURATION="$(("$(date "+%s")"-START))"
       WAIT_FOR_TIMEOUT="$((TIMEOUT-DURATION))"
