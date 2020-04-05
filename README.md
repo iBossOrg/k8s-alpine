@@ -23,10 +23,10 @@ You can start with this sample `Dockerfile` file:
 
 ```Dockerfile
 FROM iboss/alpine
-RUN adduser -D -H -u 1000 MY_USER
+RUN adduser -D -H -u 1000 "MY_USER"
 #...
 COPY rootfs /
-CMD ["--OPTION", "VALUE"]
+CMD ["--MY_OPTION", "MY_VALUE"]
 ```
 
 and overwrite entrypoint defaults in file `rootfs/entrypoint/10.default-config.sh`, for example:
@@ -36,9 +36,13 @@ DEFAULT_COMMAND="MY_COMMAND"
 RUN_AS_USER="MY_USER"
 ```
 
+### Image variables
+
 | Variable | Default value | Description |
 | -------- | ------------- | ----------- |
 | DEFAULT_COMMAND | /bin/bash | Default command if no command is given or the first argument is an option. |
+| RUN_AS_USER  | - | Switch user and group id. |
+| RUN_AS_GROUP | RUN_AS_USER | Switch user and group id. |
 | WAIT_FOR_DNS | - | Wait for DNS name resolution. List of DNS hosts or URLs separated by space. |
 | WAIT_FOR_TCP | - | Wait for TCP connection. List of host:port tuples or URLs separated by space. |
 | WAIT_FOR_URL | - | Wait for URL connection. List of URLs separated by space. |
