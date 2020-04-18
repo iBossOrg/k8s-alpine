@@ -17,7 +17,7 @@ HADOLINT_YAML		?= $(PROJECT_DIR)/.hadolint.yaml
 
 ### DOCKER_TEST ################################################################
 
-OS_RELEASE		?= $(BASE_IMAGE_TAG)
+OS_RELEASE		?= $(DOCKER_IMAGE_TAG)
 TEST_VARS		+= OS_RELEASE
 
 ### MAKE_TARGETS ###############################################################
