@@ -11,6 +11,10 @@ DOCKER_IMAGE_TAG	?= latest
 DOCKER_IMAGE_DESC	?= Alpine Linux base image modified for Kubernetes friendliness.
 DOCKER_IMAGE_URL	?= https://github.com/iBossOrg/k8s-alpine
 
+### DOCKER_LINT ################################################################
+
+HADOLINT_YAML		?= $(PROJECT_DIR)/.hadolint.yaml
+
 ### DOCKER_TEST ################################################################
 
 OS_RELEASE		?= $(BASE_IMAGE_TAG)
@@ -18,28 +22,18 @@ TEST_VARS		+= OS_RELEASE
 
 ### MAKE_TARGETS ###############################################################
 
-# Build an image and run tests
+# Build an image, run tests, and then clean
 .PHONY: all
-all: lint build start wait logs test
-
-# Delete all running containers and work files, build an image and run tests
-.PHONY: image
-image: all
+all: image
 	@$(MAKE) clean
+
+# # Build an image and run tests
+.PHONY: image
+image: lint build start wait logs test
 
 # Lint project files
 .PHONY: lint
 lint: docker-lint shellcheck
-
-# Lint Docker files
-.PHONY: docker-lint
-docker-lint:
-	@echo "+++ hadolint help: https://github.com/hadolint/hadolint#rules" > /dev/stderr
-	@set -x; \
-	docker run --rm \
-	--volume $(PROJECT_DIR)/Dockerfile:/Dockerfile \
-	--volume $(PROJECT_DIR)/.hadolint.yaml:/.hadolint.yaml \
-	hadolint/hadolint hadolint Dockerfile
 
 # Lint shell scripts
 .PHONY: shellcheck

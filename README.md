@@ -97,7 +97,6 @@ Use the command `make` in the project directory:
 
 ```bash
 make all                      # Build and test all images
-make images                   # Build and test all images
 make pull                     # Pull all images form Docker registry
 make publish                  # Publish all images into Docker registry
 make clean                    # Clean all images
@@ -106,8 +105,8 @@ make clean                    # Clean all images
 Use the command `make` in `latest` or `edge` directories:
 
 ```bash
-make all                      # Build an image and run tests
-make image                    # Build an image, run tests, and then clean
+make all                      # Build an image, run tests, and then clean
+make image                    # Build an image and run tests
 make lint                     # Lint project files
 make pull                     # Pull all images from the Docker Registry
 make build                    # Build an image
