@@ -1,10 +1,8 @@
 SUBDIRS		?= latest edge
-TARGET		?= all
 
 # Build and test all images
 .PHONY: all
-all:
-	@$(MAKE) $(SUBDIRS) TARGET=all
+all: $(SUBDIRS)
 
 # Pull all images from Docker registry
 .PHONY: pull
@@ -24,4 +22,4 @@ clean:
 # Build and test the image
 .PHONY: $(SUBDIRS)
 $(SUBDIRS):
-	@cd $@; make docker-version $(TARGET)
+	@cd $@; make docker-version $(or $(TARGET),all)
