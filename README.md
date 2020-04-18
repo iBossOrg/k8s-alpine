@@ -40,9 +40,10 @@ RUN_AS_USER="MY_USER"
 
 | Variable | Default value | Description |
 | -------- | ------------- | ----------- |
-| DEFAULT_COMMAND | /bin/bash | Default command if no command is given or the first argument is an option. |
+| DEFAULT_COMMAND | /bin/bash | Default command if no command is given or the first argument is an option or the first argument is a subcommand. |
+| DEFAULT_COMMAND_ARGS | () | Array of default command subcommands. |
 | RUN_AS_USER  | - | Switch user and group id. |
-| RUN_AS_GROUP | RUN_AS_USER | Switch user and group id. |
+| RUN_AS_GROUP | ${RUN_AS_USER} | Switch user and group id. |
 | WAIT_FOR_DNS | - | Wait for DNS name resolution. List of DNS hosts or URLs separated by space. |
 | WAIT_FOR_TCP | - | Wait for TCP connection. List of host:port tuples or URLs separated by space. |
 | WAIT_FOR_URL | - | Wait for URL connection. List of URLs separated by space. |
