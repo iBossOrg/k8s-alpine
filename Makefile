@@ -8,7 +8,7 @@ all images: $(SUBDIRS)
 # Build and test the image
 .PHONY: $(SUBDIRS)
 $(SUBDIRS):
-	@cd $@; make display-version-header $(TARGET)
+	@cd $@; make docker-version $(TARGET)
 
 # Pull all images from Docker registry
 .PHONY: pull
