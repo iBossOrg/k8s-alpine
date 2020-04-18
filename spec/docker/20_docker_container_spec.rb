@@ -36,8 +36,8 @@ describe "Docker container", :test => :docker_container do
 
   describe "Docker Entrypoint", :test => :entrypoint do
 
-    # TODO: /service/entrypoint.d
-    # TODO: /entrypoint.d/20.default-command.sh
+    # TODO: /service/entrypoint
+    # TODO: /entrypoint/20.default-command.sh
 
     ### /entrypoint.d/80-wait-for.sh ###########################################
 
