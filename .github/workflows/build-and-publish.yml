@@ -21,7 +21,7 @@ jobs:
       - name: Checkout Mk
         run:  git clone https://github.com/iBossOrg/Mk ../Mk
 
-      - name: Login to Docker registry
+      - name: Login to image registry
         uses: azure/docker-login@v1
         with:
           username: ${{ secrets.REGISTRY_USERNAME }}
