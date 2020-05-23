@@ -88,10 +88,12 @@ Full details on how to report issues can be found in the [Contribution Guideline
 
 ## Contributing
 
-Clone the GitHub repository into your working directory:
+Clone the GitHub repositories into your working directory:
 
 ```bash
+git clone https://github.com/ibossorg/Mk
 git clone https://github.com/ibossorg/k8s-alpine
+cd k8s-alpine
 ```
 
 Use the command `make` in the project directory:
