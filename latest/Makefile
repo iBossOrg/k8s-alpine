@@ -4,7 +4,7 @@ BASE_IMAGE_TAG		?= latest
 
 ### DOCKER_IMAGE ###############################################################
 
-DOCKER_IMAGE_TAG	?= 3.12
+DOCKER_IMAGE_TAG	?= 3.14
 DOCKER_IMAGE_TAGS	?= 3 latest
 
 ### IMAGE_MK ###################################################################
