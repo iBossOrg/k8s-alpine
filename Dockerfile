@@ -3,9 +3,9 @@ ARG BASE_IMAGE=alpine
 ### BUILDER ####################################################################
 
 FROM ${BASE_IMAGE} AS builder
-COPY rootfs /app
+COPY rootfs /rootfs
 RUN set -ex; \
-  chmod +x /app/service/entrypoint
+  chmod +x /rootfs/service/entrypoint
 
 ### IMAGE ######################################################################
 
@@ -32,6 +32,6 @@ RUN set -ex; \
   # Show Alpine Linux version
   cat /etc/alpine-release
 
-COPY --from=builder /app /
+COPY --from=builder /rootfs /
 
 ENTRYPOINT ["/service/entrypoint"]
